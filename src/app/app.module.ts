@@ -12,6 +12,8 @@ import { ProductComponent } from './product/product.component';
 import { FormsModule } from '@angular/forms';
 import 'firebase/firestore';
 import { CategoryComponent } from './category/category.component';
+import { AngularFireStorage } from '@angular/fire/storage';
+
 
 @NgModule({
   declarations: [
@@ -31,7 +33,7 @@ import { CategoryComponent } from './category/category.component';
     FormsModule,
     MatSelectModule
   ],
-  providers: [AngularFirestore],
+  providers: [AngularFirestore, AngularFireStorage],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

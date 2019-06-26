@@ -9,11 +9,13 @@
   <div class="form-group">
     <input name="price" #price="ngModel" [(ngModel)]="productService.formData.price" class="form-control" placeholder="Price">
   </div>
-  <!-- <div class="form-row">
-    <div class="form-group">
-      <input name="discount" #discount="ngModel" [(ngModel)]="productService.formData.discount" class="form-control" placeholder="Discount">
-    </div>
-  </div> -->    
+  <div class="form-group">
+    <label for="file">File:</label>
+    <input type="file" (change)="upload(form, $event)" accept=".png,.jpg" />
+    <div>{{ uploadPercent | async }}</div>
+    <div>{{ downloadURL | async }}</div>
+  </div> 
+  <input type="hidden" name="image" #image="ngModel" [(ngModel)]="productService.formData.image" class="form-control">
   <div class="form-row">
     <div class="form-group">
     <mat-form-field>

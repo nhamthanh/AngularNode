@@ -4,6 +4,9 @@ import { ProductService } from './product.service';
 import { NgForm } from '@angular/forms';
 import { Category } from '../category/category';
 import { CategoryService } from '../category/category.service';
+import { AngularFireStorage } from '@angular/fire/storage';
+import { Observable } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product',
@@ -13,7 +16,9 @@ import { CategoryService } from '../category/category.service';
 export class ProductComponent implements OnInit {
   currentUser: any;
   categories: Category[];
-  constructor(public productService: ProductService, public categoryService: CategoryService) {
+  uploadPercent: Observable<number>;
+  downloadURL: Observable<string>;
+  constructor(public productService: ProductService, public categoryService: CategoryService, private storage: AngularFireStorage) {
     if (this.productService.currentUserValue) {
       this.productService.currentUser.subscribe(x => this.currentUser = x);
     }
@@ -31,6 +36,22 @@ export class ProductComponent implements OnInit {
     });
   }
 
+  upload(form: NgForm, event) {
+    const file = event.target.files[0];
+    const filePath = 'upload/' + file.name;
+    const fileRef = this.storage.ref(filePath);
+    const task = this.storage.upload(filePath, file);
+    // observe percentage changes
+    this.uploadPercent = task.percentageChanges();
+    // get notified when the download URL is available
+    task.snapshotChanges().pipe(
+      finalize(() => {
+        this.downloadURL = fileRef.getDownloadURL();
+      })
+    )
+    .subscribe();
+  }
+
   resetForm(form?: NgForm) {
     if (form != null) {
       form.resetForm();
@@ -40,7 +61,8 @@ export class ProductComponent implements OnInit {
       name: '',
       price: '',
       category: '',
-      discount: ''
+      discount: '',
+      image: ''
     }
   }
 
@@ -50,13 +72,16 @@ export class ProductComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     let product = Object.assign({}, form.value);
-    delete product.id;
-    if (form.value.id == null) {
-      this.productService.createProduct(product);
-    } else {
-      //this.productService.updateProduct(product);
-    }
-    this.resetForm(form);
+    this.downloadURL.subscribe(x => {product.image = x;
+        delete product.id;
+        if (form.value.id == null) {
+          this.productService.createProduct(product);
+        } else {
+          //this.productService.updateProduct(product);
+        }
+        this.resetForm(form);
+      }
+    );
   }
 
   create(product: Product){
