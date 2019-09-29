@@ -11,6 +11,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { ProductComponent } from './product/product.component';
 import { FormsModule } from '@angular/forms';
 import 'firebase/firestore';
+import 'firebase/storage';
 import { CategoryComponent } from './category/category.component';
 import { AngularFireStorage } from '@angular/fire/storage';
 

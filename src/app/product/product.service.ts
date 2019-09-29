@@ -12,7 +12,7 @@ export class ProductService {
   public currentUser: Observable<any>;
   formData: Product;
 
-  constructor(private firestore: AngularFirestore) { 
+  constructor(private firestore: AngularFirestore) {
     this.currentUserSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem('currentUser')));
     this.currentUser = this.currentUserSubject.asObservable();
   }
