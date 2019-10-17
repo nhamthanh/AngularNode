@@ -1,8 +1,6 @@
 <!-- logo -->
-<div class="d-flex justify-content-end mr-3">
-  <button mat-button (click)="login()"><i class="material-icons md-28">person</i></button>
-  <button mat-button (click)="logout()"><i class="material-icons md-28">logout</i></button>
-</div>
+<div class="container-fluid">
+<app-header></app-header>
 <div class="d-flex justify-content-center">
   <img src="assets/img/logo.png" />
   
@@ -29,7 +27,7 @@
 <div *ngFor="let category of categories">
   <div class="d-flex flex-row justify-content-center bd-highlight mb-3">
     <h2 class="d-flex">{{category.name}}</h2>
-    <div class="d-flex mt-2 ml-1" *ngIf="currentUser"><a routerLink="/product"><i class="material-icons md-28">add_circle</i></a></div>
+    <div class="d-flex mt-2 ml-1" *ngIf="auth.isLoggedIn()"><a routerLink="/product"><i class="material-icons md-28">add_circle</i></a></div>
   </div>
   <div class="d-flex flex-row bd-highlight mb-3">
     <div *ngFor="let product of products" class="p-2 bd-highlight">
@@ -56,3 +54,4 @@
 </div> -->
 
 <router-outlet></router-outlet>
+</div>

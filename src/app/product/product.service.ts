@@ -2,7 +2,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Injectable } from '@angular/core';
 import { Product } from './product.model';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators'
+import { map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
@@ -25,21 +25,21 @@ export class ProductService {
     return this.firestore.collection('products').snapshotChanges();
   }
 
-  createProduct(product: Product){
+  createProduct(product: Product) {
     return this.firestore.collection('products').add(product);
   }
 
-  login() {
-    let user = {name: "admin"};
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    this.currentUserSubject.next(user);
-    return user;
-  }
+  // login() {
+  //   let user = {name: "admin"};
+  //   localStorage.setItem('currentUser', JSON.stringify(user));
+  //   this.currentUserSubject.next(user);
+  //   return user;
+  // }
 
-  logout() {
-    localStorage.removeItem('currentUser');
-    this.currentUserSubject.next(null);
-  }
+  // logout() {
+  //   localStorage.removeItem('currentUser');
+  //   this.currentUserSubject.next(null);
+  // }
 
 }
 
