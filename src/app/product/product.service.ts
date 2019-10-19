@@ -1,8 +1,9 @@
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Injectable } from '@angular/core';
-import { Product } from './product.model';
+
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ProductModel } from './ProductModel';
 @Injectable({
   providedIn: 'root'
 })
@@ -10,7 +11,7 @@ export class ProductService {
 
   private currentUserSubject: BehaviorSubject<any>;
   public currentUser: Observable<any>;
-  formData: Product;
+  formData: ProductModel;
 
   constructor(private firestore: AngularFirestore) {
     this.currentUserSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem('currentUser')));
@@ -25,8 +26,16 @@ export class ProductService {
     return this.firestore.collection('products').snapshotChanges();
   }
 
-  createProduct(product: Product) {
+  createProduct(product: ProductModel) {
     return this.firestore.collection('products').add(product);
+  }
+
+  deleteProduct(id) {
+    return this.firestore.collection('products').doc(id).delete();
+  }
+
+  updateProduct(id, product) {
+    return this.firestore.collection('products').doc(id).set(product);
   }
 
   // login() {

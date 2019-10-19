@@ -2,7 +2,6 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { UserModel } from '../model/UserModel';
-import { Observable, pipe } from 'rxjs';
 import { AuthenticateService } from '../service/authenticate.service';
 @Component({
   selector: 'app-login',
@@ -26,7 +25,6 @@ export class LoginComponent {
   login(): void {
     this.authenticateService.SignIn(this.email, this.password);
     this.dialogRef.close();
-    this.router.navigate(['/product']);
   }
 
   onNoClick(): void {

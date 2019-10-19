@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Product } from './product/product.model';
+
 import { ProductService } from './product/product.service';
 import { Router } from '@angular/router';
 import { CategoryService } from './category/category.service';
 import { Category } from './category/category';
 import * as firebase from 'firebase';
 import { AuthenticateService } from './service/authenticate.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ProductComponent } from './product/product.component';
+import { ProductModel } from './product/ProductModel';
 
 @Component({
   selector: 'app-root',
@@ -15,13 +18,13 @@ import { AuthenticateService } from './service/authenticate.service';
 export class AppComponent implements OnInit {
   title = 'angularNode';
   currentUser = firebase.auth().currentUser;
-  products: Product[];
+  products: ProductModel[];
   categories: Category[];
-  constructor(private productService: ProductService,
+  constructor(private dialog: MatDialog,
+              private productService: ProductService,
               private auth: AuthenticateService,
               private categoryService: CategoryService,
-              private route: Router) {
-  }
+              private route: Router) {}
 
   ngOnInit() {
     this.productService.getProducts().subscribe(data => {
@@ -29,7 +32,7 @@ export class AppComponent implements OnInit {
         return {
           id: e.payload.doc.id,
           ...e.payload.doc.data()
-        } as Product;
+        } as ProductModel;
       });
     });
     this.categoryService.getCategories().subscribe(data => {
@@ -42,12 +45,18 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // login() {
-  //   this.productService.login();
-  //   if (this.productService.currentUserValue) {
-  //     this.productService.currentUser.subscribe(x => this.currentUser = x);
-  //   }
-  //   this.route.navigate(['/product']);
-  // }
+  productDialog(product): void {
+    const dialogRef = this.dialog.open(ProductComponent, {
+      width: '800px',
+      data: product
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
+  delete(product) {
+    this.productService.deleteProduct(product.id);
+  }
 }

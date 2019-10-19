@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { Product } from './product.model';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ProductModel } from './ProductModel';
 import { ProductService } from './product.service';
 import { NgForm } from '@angular/forms';
 import { Category } from '../category/category';
 import { CategoryService } from '../category/category.service';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { finalize, startWith } from 'rxjs/operators';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
 @Component({
   selector: 'app-product',
@@ -18,10 +19,11 @@ export class ProductComponent implements OnInit {
   categories: Category[];
   uploadPercent: Observable<number>;
   downloadURL: Observable<string>;
-  constructor(public productService: ProductService, public categoryService: CategoryService, private storage: AngularFireStorage) {
-    if (this.productService.currentUserValue) {
-      this.productService.currentUser.subscribe(x => this.currentUser = x);
-    }
+  constructor(public dialogRef: MatDialogRef<ProductComponent>,
+              public productService: ProductService,
+              public categoryService: CategoryService,
+              @Inject(MAT_DIALOG_DATA) public data: ProductModel,
+              private storage: AngularFireStorage) {
   }
 
   ngOnInit() {
@@ -32,8 +34,17 @@ export class ProductComponent implements OnInit {
           id: e.payload.doc.id,
           ...e.payload.doc.data()
         } as Category;
-      })
+      });
     });
+    this.productService.formData = {
+      id: this.data.id,
+      name: this.data.name,
+      price: this.data.price,
+      category: this.data.category,
+      discount: this.data.discount,
+      image: this.data.image
+    };
+    this.downloadURL = of(this.data.image);
   }
 
   upload(form: NgForm, event) {
@@ -63,28 +74,65 @@ export class ProductComponent implements OnInit {
       category: '',
       discount: '',
       image: ''
-    }
+    };
   }
 
   categoryChange(form: NgForm, value) {
     form.value.category = value;
   }
 
-  onSubmit(form: NgForm) {
-    let product = Object.assign({}, form.value);
-    this.downloadURL.subscribe(x => {product.image = x;
-        delete product.id;
-        if (form.value.id == null) {
-          this.productService.createProduct(product);
-        } else {
-          //this.productService.updateProduct(product);
-        }
-        this.resetForm(form);
+  // onSubmit(form: NgForm) {
+  //   const product = Object.assign({}, form.value);
+  //   // tslint:disable: align
+  //   if (!this.downloadURL) {
+  //     if (form.value.id == null) {
+  //       this.productService.createProduct(product);
+  //     } else {
+  //       //this.productService.updateProduct(product);
+  //     }
+  //   } else {
+  //     this.downloadURL.subscribe(x => {
+  //         product.image = x;
+  //         delete product.id;
+  //         if (form.value.id == null) {
+  //           this.productService.createProduct(product);
+  //         } else {
+  //           //this.productService.updateProduct(product);
+  //         }
+  //       }
+  //     );
+  //   }
+  //   this.resetForm(form);
+  // }
+
+  onClick(form: NgForm) {
+    const product = Object.assign({}, form.value);
+    // tslint:disable: align
+    if (!this.downloadURL) {
+      if (form.value.id == null) {
+        this.productService.createProduct(product);
+      } else {
+        this.productService.updateProduct(product.id, product);
       }
-    );
+    } else {
+      this.downloadURL.subscribe(x => {
+          product.image = x;
+          delete product.id;
+          if (form.value.id == null) {
+            this.productService.createProduct(product);
+          } else {
+            this.productService.updateProduct(product.id, product);
+          }
+        }
+      );
+    }
   }
 
-  create(product: Product){
+  create(product: ProductModel){
       this.productService.createProduct(product);
+  }
+
+  onNoClick(): void {
+    this.dialogRef.close();
   }
 }

@@ -37,7 +37,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
     ReactiveFormsModule
   ],
   entryComponents: [
-    LoginComponent,
+    LoginComponent, ProductComponent
   ],
   providers: [AngularFirestore, AngularFireStorage, AuthenticateService, AngularFireAuth],
   bootstrap: [AppComponent]
