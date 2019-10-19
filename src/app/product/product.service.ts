@@ -26,16 +26,19 @@ export class ProductService {
     return this.firestore.collection('products').snapshotChanges();
   }
 
-  createProduct(product: ProductModel) {
-    return this.firestore.collection('products').add(product);
+  persistProduct(product: ProductModel) {
+    if (!product.image) {
+      delete product.image;
+    }
+    if (product.id) {
+      return this.firestore.collection('products').doc(product.id).set(product);
+    } else {
+      return this.firestore.collection('products').add(product);
+    }
   }
 
   deleteProduct(id) {
     return this.firestore.collection('products').doc(id).delete();
-  }
-
-  updateProduct(id, product) {
-    return this.firestore.collection('products').doc(id).set(product);
   }
 
   // login() {

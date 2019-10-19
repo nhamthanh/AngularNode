@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
   productDialog(product): void {
     const dialogRef = this.dialog.open(ProductComponent, {
       width: '800px',
-      data: product
+      data: product ? product : {}
     });
 
     dialogRef.afterClosed().subscribe(result => {

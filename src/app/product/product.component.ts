@@ -36,15 +36,17 @@ export class ProductComponent implements OnInit {
         } as Category;
       });
     });
-    this.productService.formData = {
-      id: this.data.id,
-      name: this.data.name,
-      price: this.data.price,
-      category: this.data.category,
-      discount: this.data.discount,
-      image: this.data.image
-    };
-    this.downloadURL = of(this.data.image);
+    if (this.data) {
+      this.productService.formData = {
+        id: this.data.id,
+        name: this.data.name,
+        price: this.data.price,
+        category: this.data.category,
+        discount: this.data.discount,
+        image: this.data.image
+      };
+      this.downloadURL = of(this.data.image);
+    }
   }
 
   upload(form: NgForm, event) {
@@ -81,55 +83,20 @@ export class ProductComponent implements OnInit {
     form.value.category = value;
   }
 
-  // onSubmit(form: NgForm) {
-  //   const product = Object.assign({}, form.value);
-  //   // tslint:disable: align
-  //   if (!this.downloadURL) {
-  //     if (form.value.id == null) {
-  //       this.productService.createProduct(product);
-  //     } else {
-  //       //this.productService.updateProduct(product);
-  //     }
-  //   } else {
-  //     this.downloadURL.subscribe(x => {
-  //         product.image = x;
-  //         delete product.id;
-  //         if (form.value.id == null) {
-  //           this.productService.createProduct(product);
-  //         } else {
-  //           //this.productService.updateProduct(product);
-  //         }
-  //       }
-  //     );
-  //   }
-  //   this.resetForm(form);
-  // }
-
-  onClick(form: NgForm) {
+  onSubmit(form: NgForm) {
     const product = Object.assign({}, form.value);
-    // tslint:disable: align
-    if (!this.downloadURL) {
-      if (form.value.id == null) {
-        this.productService.createProduct(product);
-      } else {
-        this.productService.updateProduct(product.id, product);
-      }
-    } else {
-      this.downloadURL.subscribe(x => {
-          product.image = x;
-          delete product.id;
-          if (form.value.id == null) {
-            this.productService.createProduct(product);
-          } else {
-            this.productService.updateProduct(product.id, product);
-          }
-        }
-      );
+    if (form.value.id == null) {
+      delete product.id;
     }
-  }
-
-  create(product: ProductModel){
-      this.productService.createProduct(product);
+    this.downloadURL.subscribe(x => {
+        product.image = x;
+        this.productService.persistProduct(product);
+      },
+      err => {
+        console.log(err);
+      }
+    );
+    this.dialogRef.close();
   }
 
   onNoClick(): void {
